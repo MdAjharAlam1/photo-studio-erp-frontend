@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const BACKEND_URL = "http://127.0.0.1:8000"
+const BACKEND_URL =  process.env.REACT_APP_API_URL
 export const API = `${BACKEND_URL}/api`;
 
 export const api = axios.create({
@@ -10,6 +10,7 @@ export const api = axios.create({
 });
 
 export function formatApiError(err) {
+  console.log(err)
   const d = err?.response?.data?.detail;
   if (d == null) return err?.message || "Something went wrong";
   if (typeof d === "string") return d;
