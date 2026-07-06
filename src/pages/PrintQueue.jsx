@@ -3,6 +3,7 @@ import { api, formatApiError } from "@/lib/api";
 import { toast } from "sonner";
 import PageHeader from "@/components/PageHeader";
 import { Printer, Check, X, Trash2, Play, RefreshCw } from "lucide-react";
+ import { useCallback } from "react";
 
 const STATUS_COLORS = {
   queued: "text-yellow-800 bg-yellow-50 border-yellow-200",
@@ -16,17 +17,25 @@ export default function PrintQueue() {
   const [filter, setFilter] = useState("all");
   const [busy, setBusy] = useState(false);
 
-  const load = async () => {
-    setBusy(true);
-    try {
-      const q = filter === "all" ? "" : `?status=${filter}`;
-      const { data } = await api.get(`/print-jobs${q}`);
-      setJobs(data);
-    } catch (e) { toast.error(formatApiError(e)); }
-    setBusy(false);
-  };
+ 
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, [filter]);
+  const load = useCallback(async () => {
+    setBusy(true);
+
+    try {
+      const query = filter === "all" ? "" : `?status=${filter}`;
+      const { data } = await api.get(`/print-jobs${query}`);
+      setJobs(data);
+    } catch (e) {
+      toast.error(formatApiError(e));
+    } finally {
+      setBusy(false);
+    }
+  }, [filter]);
+
+  useEffect(() => {
+    load();
+  }, [load]);
 
   const patch = async (id, status) => {
     try {

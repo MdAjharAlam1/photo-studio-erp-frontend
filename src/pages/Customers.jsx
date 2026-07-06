@@ -8,6 +8,8 @@ import {
   Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle,
 } from "@/components/ui/dialog";
 
+  import { useCallback } from "react";
+
 const initialForm = { name: "", phone: "", email: "", address: "", gstin: "", notes: "" };
 
 export default function Customers() {
@@ -16,9 +18,21 @@ export default function Customers() {
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState(initialForm);
 
-  const load = () => api.get("/customers", { params: { q } }).then(({ data }) => setItems(data)).catch(e => toast.error(formatApiError(e)));
 
-  useEffect(() => { load(); }, [q]);
+const load = useCallback(async () => {
+  try {
+    const { data } = await api.get("/customers", {
+      params: { q },
+    });
+    setItems(data);
+  } catch (e) {
+    toast.error(formatApiError(e));
+  }
+}, [q]);
+
+useEffect(() => {
+  load();
+}, [load]);
 
   const submit = async (e) => {
     e.preventDefault();

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { api, formatApiError } from "@/lib/api";
 import { toast } from "sonner";
+import { useCallback } from "react";
 import PageHeader from "@/components/PageHeader";
 import { BarChart3, Download, FileSpreadsheet, RefreshCw, TrendingUp, Users, Package, Receipt } from "lucide-react";
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from "recharts";
@@ -29,18 +30,30 @@ export default function Reports() {
   const [data, setData] = useState(null);
   const [busy, setBusy] = useState(false);
 
-  const load = async () => {
-    setBusy(true);
-    try {
-      const df = new Date(from + "T00:00:00Z").toISOString();
-      const dt = new Date(to + "T23:59:59Z").toISOString();
-      const { data } = await api.get(`/reports/summary?date_from=${encodeURIComponent(df)}&date_to=${encodeURIComponent(dt)}`);
-      setData(data);
-    } catch (e) { toast.error(formatApiError(e)); }
-    setBusy(false);
-  };
+  
 
-  useEffect(() => { load(); /* eslint-disable-next-line */ }, []);
+const load = useCallback(async () => {
+  setBusy(true);
+
+  try {
+    const df = new Date(`${from}T00:00:00Z`).toISOString();
+    const dt = new Date(`${to}T23:59:59Z`).toISOString();
+
+    const { data } = await api.get(
+      `/reports/summary?date_from=${encodeURIComponent(df)}&date_to=${encodeURIComponent(dt)}`
+    );
+
+    setData(data);
+  } catch (e) {
+    toast.error(formatApiError(e));
+  } finally {
+    setBusy(false);
+  }
+}, [from, to]);
+
+useEffect(() => {
+  load();
+}, [load]);
 
   const kpis = useMemo(() => data ? ([
     { label: "Revenue", value: inr(data.revenue), icon: TrendingUp, color: "text-green-700 bg-green-50 border-green-200" },
