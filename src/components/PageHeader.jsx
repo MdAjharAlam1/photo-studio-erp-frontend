@@ -1,6 +1,6 @@
 export default function PageHeader({ eyebrow, title, description, actions }) {
   return (
-    <div className="px-8 pt-8 pb-6 border-b border-zinc-200 bg-white/80 backdrop-blur-md sticky top-0 z-10">
+    <div className="px-8 py-4 border-b border-zinc-200 bg-white/80 backdrop-blur-md sticky top-0 z-10">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
           {eyebrow && <div className="label-uppercase mb-1">{eyebrow}</div>}
