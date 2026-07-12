@@ -3765,6 +3765,531 @@ function TextPanel({ src, setCroppedSrc }) {
 }
 
 /* ---------------- Step 7: Layout Builder ---------------- */
+// function StepLayout({
+//   paper,
+//   setPaper,
+//   size,
+//   copies,
+//   setCopies,
+//   tiles,
+//   setTiles,
+//   autoFill,
+//   finalPhotoSrc,
+// }) {
+//   const [selected, setSelected] = useState(null);
+//   const [photosPerRow, setPhotosPerRow] = useState(4);
+//   const [totalPhotos, setTotalPhotos] = useState(8);
+
+//   const [hGap, setHGap] = useState(8);
+//   const [vGap, setVGap] = useState(8);
+
+//   const [topMargin, setTopMargin] = useState(10);
+//   const [leftMargin, setLeftMargin] = useState(10);
+
+//   const [autoCenter, setAutoCenter] = useState(true);
+//   const [autoRotate, setAutoRotate] = useState(false);
+//   const canvasRef = useRef();
+//   const pW = paper.w * MM_PX;
+//   const pH = paper.h * MM_PX;
+  
+
+//   // const addTile = () => {
+//   //   if (!finalPhotoSrc) return;
+//   //   setTiles([...tiles, {
+//   //     id: crypto.randomUUID(), x: 20, y: 20,
+//   //     w: size.w * MM_PX, h: size.h * MM_PX,
+//   //     rotation: 0, src: finalPhotoSrc,
+//   //     borderWidth: 0, borderColor: "#000000", borderRadius: 0,
+//   //   }]);
+//   // };
+
+//   const generateLayout = useCallback(()=> {
+//     if (!finalPhotoSrc) return;
+
+//     // const photoW = size.w * MM_PX;
+//     // const photoH = size.h * MM_PX;
+
+//     const pW = paper.w * MM_PX;
+//     const pH = paper.h * MM_PX;
+
+//     const aspect = size.h / size.w;
+
+//     const usableWidth = pW - 20 - (photosPerRow - 1) * hGap;
+
+//     const photoW = usableWidth / photosPerRow;
+
+//     const photoH = photoW * aspect;
+
+//     const rows = Math.ceil(totalPhotos / photosPerRow);
+
+//     const layoutWidth = photosPerRow * photoW + (photosPerRow - 1) * hGap;
+
+//     const layoutHeight = rows * photoH + (rows - 1) * vGap;
+
+//     const startX = autoCenter ? (pW - layoutWidth) / 2 : 10;
+
+//     const startY = autoCenter ? (pH - layoutHeight) / 2 : 10;
+
+//     const items = [];
+
+//     for (let i = 0; i < totalPhotos; i++) {
+//       const row = Math.floor(i / photosPerRow);
+
+//       const col = i % photosPerRow;
+
+//       items.push({
+//         id: crypto.randomUUID(),
+
+//         src: finalPhotoSrc,
+
+//         x: startX + col * (photoW + hGap),
+
+//         y: startY + row * (photoH + vGap),
+
+//         w: photoW,
+
+//         h: photoH,
+
+//         rotation: 0,
+
+//         borderWidth: 0,
+
+//         borderRadius: 0,
+
+//         borderColor: "#000",
+//       });
+//     }
+
+//     setTiles(items);
+//   },[paper,
+//     size,
+//     photosPerRow,
+//     totalPhotos,
+//     hGap,
+//     vGap,
+//     autoCenter,
+//     finalPhotoSrc, setTiles]);
+
+//   const removeTile = (id) => setTiles(tiles.filter((t) => t.id !== id));
+//   const duplicateTile = (t) =>
+//     setTiles([
+//       ...tiles,
+//       { ...t, id: crypto.randomUUID(), x: t.x + 10, y: t.y + 10 },
+//     ]);
+
+//   const updateTile = (id, patch) =>
+//     setTiles((prev) => prev.map((t) => (t.id === id ? { ...t, ...patch } : t)));
+//   const applyBorderToAll = (patch) =>
+//     setTiles((prev) => prev.map((t) => ({ ...t, ...patch })));
+
+//   const selectedTile = tiles.find((t) => t.id === selected) || null;
+
+//   const onMouseDown = (e, t) => {
+//     e.stopPropagation();
+//     setSelected(t.id);
+//     const startX = e.clientX,
+//       startY = e.clientY;
+//     const orig = { ...t };
+//     const move = (ev) => {
+//       const dx = ev.clientX - startX,
+//         dy = ev.clientY - startY;
+//       setTiles((prev) =>
+//         prev.map((p) =>
+//           p.id === t.id
+//             ? {
+//                 ...p,
+//                 x: Math.max(0, Math.min(pW - p.w, orig.x + dx)),
+//                 y: Math.max(0, Math.min(pH - p.h, orig.y + dy)),
+//               }
+//             : p,
+//         ),
+//       );
+//     };
+//     const up = () => {
+//       window.removeEventListener("mousemove", move);
+//       window.removeEventListener("mouseup", up);
+//     };
+//     window.addEventListener("mousemove", move);
+//     window.addEventListener("mouseup", up);
+//   };
+
+//   const onResize = (e, t) => {
+//     e.stopPropagation();
+//     const startX = e.clientX,
+//       startY = e.clientY;
+//     const orig = { ...t };
+//     const ratio = t.w / t.h;
+//     const move = (ev) => {
+//       const dx = ev.clientX - startX;
+//       const newW = Math.max(30, orig.w + dx);
+//       const newH = newW / ratio;
+//       setTiles((prev) =>
+//         prev.map((p) => (p.id === t.id ? { ...p, w: newW, h: newH } : p)),
+//       );
+//     };
+//     const up = () => {
+//       window.removeEventListener("mousemove", move);
+//       window.removeEventListener("mouseup", up);
+//     };
+//     window.addEventListener("mousemove", move);
+//     window.addEventListener("mouseup", up);
+//   };
+
+//   useEffect(() => {
+//     generateLayout();
+//   }, [
+//     generateLayout
+//   ]);
+
+//   return (
+//     <div className="grid grid-cols-1 lg:grid-cols-[240px_1fr_260px] gap-4">
+//       {/* Left panel */}
+//       {/* <aside className="bg-white border border-zinc-200 rounded-md p-4 space-y-4 h-fit">
+//         <div>
+//           <div className="label-uppercase mb-2">Paper</div>
+//           <select value={paper.id} onChange={(e) => setPaper(PAPER_SIZES.find(p => p.id === e.target.value))} className="w-full h-9 px-2 border border-zinc-300 rounded-md text-sm bg-white">
+//             {PAPER_SIZES.map(p => <option key={p.id} value={p.id}>{p.label}</option>)}
+//           </select>
+//           <div className="text-[10px] font-mono text-zinc-500 mt-1">{paper.w} × {paper.h} mm</div>
+//         </div>
+//         <div>
+//           <div className="label-uppercase mb-2">Copies</div>
+//           <div className="flex items-center gap-2">
+//             <button onClick={() => setCopies(Math.max(1, copies - 1))} className="w-9 h-9 border border-zinc-300 rounded-md flex items-center justify-center"><Minus size={14} /></button>
+//             <input value={copies} onChange={(e) => setCopies(Math.max(1, Number(e.target.value) || 1))} className="flex-1 h-9 text-center border border-zinc-300 rounded-md text-sm" data-testid="copies-input" />
+//             <button onClick={() => setCopies(copies + 1)} className="w-9 h-9 border border-zinc-300 rounded-md flex items-center justify-center"><Plus size={14} /></button>
+//           </div>
+//         </div>
+//         <button onClick={autoFill} data-testid="auto-fill-btn" className="w-full h-10 bg-[#0052FF] text-white rounded-md text-sm">Smart Auto Fill</button>
+//         <button onClick={addTile} className="w-full h-10 border border-zinc-300 rounded-md text-sm flex items-center justify-center gap-2"><Plus size={14} /> Add photo</button>
+//         <button onClick={() => setTiles([])} className="w-full h-10 border border-red-200 text-red-600 rounded-md text-sm flex items-center justify-center gap-2"><Trash size={14} /> Clear canvas</button>
+//       </aside> */}
+//       <aside className="bg-white border border-zinc-200 rounded-md p-4 space-y-5">
+//         {/* Paper */}
+//         <div>
+//           <div className="label-uppercase mb-2">Paper Size</div>
+
+//           <select
+//             value={paper.id}
+//             onChange={(e) =>
+//               setPaper(PAPER_SIZES.find((p) => p.id === e.target.value))
+//             }
+//             className="w-full h-10 border rounded-md px-2"
+//           >
+//             {PAPER_SIZES.map((p) => (
+//               <option key={p.id} value={p.id}>
+//                 {p.label}
+//               </option>
+//             ))}
+//           </select>
+//         </div>
+
+//         {/* Row */}
+
+//         <div>
+//           <div className="label-uppercase mb-2">Photos Per Row</div>
+
+//           <input
+//             type="number"
+//             min={1}
+//             max={10}
+//             value={photosPerRow}
+//             onChange={(e) => setPhotosPerRow(Number(e.target.value))}
+//             className="w-full h-10 border rounded-md text-center"
+//           />
+//         </div>
+
+//         {/* Total */}
+
+//         <div>
+//           <div className="label-uppercase mb-2">Total Photos</div>
+
+//           <input
+//             type="number"
+//             min={1}
+//             max={50}
+//             value={totalPhotos}
+//             onChange={(e) => setTotalPhotos(Number(e.target.value))}
+//             className="w-full h-10 border rounded-md text-center"
+//           />
+//         </div>
+
+//         {/* Horizontal */}
+
+//         <div>
+//           <div className="flex justify-between">
+//             <span className="label-uppercase">Horizontal Gap</span>
+
+//             <span>{hGap}px</span>
+//           </div>
+
+//           <input
+//             type="range"
+//             min={0}
+//             max={30}
+//             value={hGap}
+//             onChange={(e) => setHGap(Number(e.target.value))}
+//             className="w-full"
+//           />
+//         </div>
+
+//         {/* Vertical */}
+
+//         <div>
+//           <div className="flex justify-between">
+//             <span className="label-uppercase">Vertical Gap</span>
+
+//             <span>{vGap}px</span>
+//           </div>
+
+//           <input
+//             type="range"
+//             min={0}
+//             max={30}
+//             value={vGap}
+//             onChange={(e) => setVGap(Number(e.target.value))}
+//             className="w-full"
+//           />
+//         </div>
+
+//         <label className="flex items-center gap-2">
+//           <input
+//             type="checkbox"
+//             checked={autoCenter}
+//             onChange={(e) => setAutoCenter(e.target.checked)}
+//           />
+//           Auto Center
+//         </label>
+//       </aside>
+
+//       {/* Center canvas */}
+//       <div className="canvas-bg rounded-md p-6 min-h-[540px] flex items-center justify-center">
+//         <div
+//           ref={canvasRef}
+//           onClick={() => setSelected(null)}
+//           className="paper-sheet relative"
+//           style={{ width: pW, height: pH }}
+//           data-testid="layout-canvas"
+//         >
+//           {tiles.map((t) => (
+//             <div
+//               key={t.id}
+//               onMouseDown={(e) => onMouseDown(e, t)}
+//               onClick={(e) => {
+//                 e.stopPropagation();
+//                 setSelected(t.id);
+//               }}
+//               className={`photo-tile ${selected === t.id ? "selected" : ""}`}
+//               style={{
+//                 left: t.x,
+//                 top: t.y,
+//                 width: t.w,
+//                 height: t.h,
+//                 transform: `rotate(${t.rotation}deg)`,
+//                 border:
+//                   (t.borderWidth || 0) > 0
+//                     ? `${t.borderWidth}px solid ${t.borderColor || "#000"}`
+//                     : undefined,
+//                 borderRadius: t.borderRadius || 0,
+//               }}
+//             >
+//               <img
+//                 src={t.src}
+//                 alt=""
+//                 draggable={false}
+//                 style={{
+//                   borderRadius: Math.max(
+//                     0,
+//                     (t.borderRadius || 0) - (t.borderWidth || 0),
+//                   ),
+//                 }}
+//               />
+//               {selected === t.id && (
+//                 <>
+//                   <div
+//                     className="resize-handle"
+//                     onMouseDown={(e) => onResize(e, t)}
+//                   />
+//                   <button
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       duplicateTile(t);
+//                     }}
+//                     className="absolute top-1 right-8 w-6 h-6 bg-white/95 rounded shadow flex items-center justify-center text-zinc-700"
+//                   >
+//                     <Copy size={12} />
+//                   </button>
+//                   <button
+//                     onClick={(e) => {
+//                       e.stopPropagation();
+//                       removeTile(t.id);
+//                     }}
+//                     className="absolute top-1 right-1 w-6 h-6 bg-white/95 rounded shadow flex items-center justify-center text-red-600"
+//                   >
+//                     <Trash size={12} />
+//                   </button>
+//                 </>
+//               )}
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* Right panel */}
+//       <aside className="bg-white border border-zinc-200 rounded-md p-4 space-y-4 h-fit">
+//         <div>
+//           <div className="label-uppercase">Layout stats</div>
+//           <div className="mt-2 space-y-2">
+//             {/* <StatRow label="Tiles on paper" value={tiles.length} />
+//             <StatRow label="Passport size" value={`${size.w}×${size.h}mm`} />
+//             <StatRow label="Paper" value={paper.label} />
+//             <StatRow label="Total Photos" value={tiles.length} /> */}
+//             <StatRow label="Photos Per Row" value={photosPerRow} />
+
+//             <StatRow label="Total Photos" value={tiles.length} />
+
+//             <StatRow label="Horizontal Gap" value={`${hGap}px`} />
+
+//             <StatRow label="Vertical Gap" value={`${vGap}px`} />
+//           </div>
+//         </div>
+
+//         {/* Border controls */}
+//         <div className="pt-4 border-t border-zinc-200">
+//           <div className="flex items-center justify-between">
+//             <div className="label-uppercase">Photo border</div>
+//             <span className="text-[10px] font-mono text-zinc-500">
+//               {selectedTile ? "Selected tile" : "Applies to all"}
+//             </span>
+//           </div>
+
+//           {(() => {
+//             const bw = selectedTile
+//               ? selectedTile.borderWidth || 0
+//               : tiles[0]?.borderWidth || 0;
+//             const bc = selectedTile
+//               ? selectedTile.borderColor || "#000000"
+//               : tiles[0]?.borderColor || "#000000";
+//             const br = selectedTile
+//               ? selectedTile.borderRadius || 0
+//               : tiles[0]?.borderRadius || 0;
+//             const setW = (v) =>
+//               selectedTile
+//                 ? updateTile(selectedTile.id, { borderWidth: v })
+//                 : applyBorderToAll({ borderWidth: v });
+//             const setC = (v) =>
+//               selectedTile
+//                 ? updateTile(selectedTile.id, { borderColor: v })
+//                 : applyBorderToAll({ borderColor: v });
+//             const setR = (v) =>
+//               selectedTile
+//                 ? updateTile(selectedTile.id, { borderRadius: v })
+//                 : applyBorderToAll({ borderRadius: v });
+
+//             return (
+//               <div className="mt-3 space-y-3">
+//                 <div>
+//                   <div className="flex justify-between text-xs mb-1">
+//                     <span className="label-uppercase">Width</span>
+//                     <span className="font-mono">{bw}px</span>
+//                   </div>
+//                   <input
+//                     data-testid="border-width"
+//                     type="range"
+//                     min="0"
+//                     max="20"
+//                     step="1"
+//                     value={bw}
+//                     onChange={(e) => setW(Number(e.target.value))}
+//                     className="w-full"
+//                   />
+//                 </div>
+//                 <div>
+//                   <div className="flex justify-between text-xs mb-1">
+//                     <span className="label-uppercase">Radius</span>
+//                     <span className="font-mono">{br}px</span>
+//                   </div>
+//                   <input
+//                     data-testid="border-radius"
+//                     type="range"
+//                     min="0"
+//                     max="60"
+//                     step="1"
+//                     value={br}
+//                     onChange={(e) => setR(Number(e.target.value))}
+//                     className="w-full"
+//                   />
+//                 </div>
+//                 <div className="flex items-center gap-2">
+//                   <div className="label-uppercase flex-1">Color</div>
+//                   <input
+//                     data-testid="border-color"
+//                     type="color"
+//                     value={bc}
+//                     onChange={(e) => setC(e.target.value)}
+//                     className="w-10 h-9 rounded border border-zinc-300 bg-white cursor-pointer p-0.5"
+//                   />
+//                   <div className="font-mono text-[11px] text-zinc-500">
+//                     {bc}
+//                   </div>
+//                 </div>
+
+//                 {/* Presets */}
+//                 <div>
+//                   <div className="label-uppercase mb-2">Presets</div>
+//                   <div className="grid grid-cols-4 gap-1.5">
+//                     {[
+//                       { label: "None", w: 0, c: "#000", r: 0 },
+//                       { label: "Thin", w: 2, c: "#000", r: 0 },
+//                       { label: "Bold", w: 6, c: "#000", r: 0 },
+//                       { label: "Round", w: 3, c: "#000", r: 24 },
+//                       { label: "White", w: 6, c: "#FFF", r: 0 },
+//                       { label: "Blue", w: 4, c: "#0052FF", r: 0 },
+//                       { label: "Red", w: 4, c: "#DC2626", r: 0 },
+//                       { label: "Pill", w: 4, c: "#000", r: 60 },
+//                     ].map((p) => (
+//                       <button
+//                         key={p.label}
+//                         onClick={() => {
+//                           const patch = {
+//                             borderWidth: p.w,
+//                             borderColor: p.c,
+//                             borderRadius: p.r,
+//                           };
+//                           selectedTile
+//                             ? updateTile(selectedTile.id, patch)
+//                             : applyBorderToAll(patch);
+//                         }}
+//                         className="h-8 border border-zinc-200 rounded text-[10px] uppercase tracking-[0.1em] bg-white hover:border-zinc-400"
+//                         data-testid={`border-preset-${p.label.toLowerCase()}`}
+//                       >
+//                         {p.label}
+//                       </button>
+//                     ))}
+//                   </div>
+//                 </div>
+
+//                 {!selectedTile && (
+//                   <div className="text-[10px] text-zinc-500 leading-relaxed">
+//                     Tip: click a photo on the canvas to edit just that
+//                     photo&apos;s border.
+//                   </div>
+//                 )}
+//               </div>
+//             );
+//           })()}
+//         </div>
+
+//         <div className="pt-3 border-t border-zinc-200 text-xs text-zinc-500 leading-relaxed">
+//           Drag tiles to reposition · corner handle to resize · click a tile to
+//           duplicate / delete.
+//         </div>
+//       </aside>
+//     </div>
+//   );
+// }
+
+/* ---------------- Step 7: Layout Builder ---------------- */
 function StepLayout({
   paper,
   setPaper,
@@ -4288,6 +4813,7 @@ function StepLayout({
     </div>
   );
 }
+
 
 function StatRow({ label, value }) {
   return (
